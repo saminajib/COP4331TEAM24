@@ -1,10 +1,10 @@
 <?php
     $inData = getRequestInfo();
 
-    $Name = $inData->contact->Name;
-    $Phone = $inData->contact->Phone;
-    $Email = $inData->contact->Email;
-    $userId = $inData->userId;
+    $Login = $inData->login;
+    $Password = $inData->password;
+    $FirstName = $inData->firstName;
+    $LastName = $inData->lastName;
 
     $conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331");
     if($conn->connect_error)
@@ -13,12 +13,25 @@
     }
     else
     {
-        $stmt = $conn->prepare("insert into Contacts (Name, Phone, Email, UserID) values (?, ?, ?, ?)");
-        $stmt->bind_param('sssi',$Name,$Phone,$Email,$userId);
-        $stmt->execute();
-        $stmt->close();
+        $stmt1 = $conn->prepare("SELECT EXISTS(SELECT 1 FROM Users WHERE Login = ?) AS item_exists");
+        $stmt1->bind_param("s",$Login);
+        $stmt1->execute();
+        $stmt1->bind_result($item_exists);
+        $stmt1->fetch();
+        $stmt1->close();
+        if($item_exists)
+        {
+            returnWithError("Login already exists");
+        }
+        else
+        {
+            $stmt2 = $conn->prepare("insert into Users (Login, Password, FirstName, LastName) values (?, ?, ?, ?)");
+            $stmt2->bind_param('ssss', $Login, $Password, $FirstName, $LastName);
+            $stmt2->execute();
+            $stmt2->close();
+            returnWithError("");
+        }
         $conn->close();
-        returnWithError("");
     }
 
     function getRequestInfo()
