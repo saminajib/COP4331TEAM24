@@ -10,6 +10,7 @@
 	$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331"); 	
 	if( $conn->connect_error )
 	{
+		http_response_code(500);
 		returnWithError( $conn->connect_error );
 	}
 	else
@@ -25,7 +26,8 @@
 		}
 		else
 		{
-			returnWithError("No Records Found");
+			http_response_code(404);
+			returnWithError("No records found");
 		}
 
 		$stmt->close();
