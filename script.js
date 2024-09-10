@@ -1,52 +1,118 @@
+const apiBaseURL = "http://cop4331team24.online/LAMPAPI";
+let userId = 12; // This would be dynamically set after login
+let editIndex = null;
+
+// Helper function to make API requests
+async function apiRequest(endpoint, method, body) {
+    const response = await fetch(`${apiBaseURL}${endpoint}`, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+    return await response.json();
+}
+
 // Register form submission
-document.getElementById('registerForm')?.addEventListener('submit', function(event) {
+document.getElementById('registerForm')?.addEventListener('submit', async function(event) {
     event.preventDefault();
+    
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-
-    if (username && password) {
-        const user = {
-            username: username,
-            password: password
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    
+    if (username && password && firstName && lastName) {
+        const signUpData = {
+            login: username,
+            password: password,
+            firstName: firstName,
+            lastName: lastName
         };
 
-        // Store user data in local storage
-        localStorage.setItem('user', JSON.stringify(user));
-        document.getElementById('message').textContent = 'Registration successful!';
-        document.getElementById('registerForm').reset();
+        try {
+            const response = await fetch('http://cop4331team24.online/LAMPAPI/SignUp.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(signUpData)
+            });
+
+            const result = await response.json();
+
+            if (result.error === "") {
+                document.getElementById('message').textContent = 'Registration successful!';
+                document.getElementById('registerForm').reset();
+            } else if (result.error === "Username taken") {
+                document.getElementById('message').textContent = 'Username already taken!';
+            } else {
+                document.getElementById('message').textContent = 'Registration failed!';
+            }
+
+        } catch (error) {
+            document.getElementById('message').textContent = 'Server error. Please try again later.';
+        }
     } else {
         document.getElementById('message').textContent = 'Please fill in all fields!';
     }
 });
 
 // Login form submission
-document.getElementById('loginForm')?.addEventListener('submit', function(event) {
+document.getElementById('loginForm')?.addEventListener('submit', async function(event) {
     event.preventDefault();
+    
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
+    
+    if (username && password) {
+        const loginData = {
+            login: username,
+            password: password
+        };
 
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+        try {
+            const response = await fetch('http://cop4331team24.online/LAMPAPI/Login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginData)
+            });
 
-    if (storedUser && username === storedUser.username && password === storedUser.password) {
-        window.location.href = '/pages/home.html';
+            const result = await response.json();
+
+            if (result.error === "") {
+                // Store user information such as user ID
+                localStorage.setItem('userId', result.id); 
+                localStorage.setItem('firstName', result.firstName);
+                localStorage.setItem('lastName', result.lastName);
+
+                // Redirect to the home page
+                window.location.href = '/pages/home.html';
+            } else {
+                document.getElementById('loginMessage').textContent = 'Invalid username or password!';
+            }
+
+        } catch (error) {
+            document.getElementById('loginMessage').textContent = 'Server error. Please try again later.';
+        }
     } else {
-        document.getElementById('loginMessage').textContent = 'Invalid username or password!';
+        document.getElementById('loginMessage').textContent = 'Please fill in all fields!';
     }
 });
 
-
-// Global variable to track editing
-let editIndex = null;
-
 // Load contacts from local storage
-function loadContacts() {
-    const contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    return contacts;
-}
+async function loadContacts(query = '') {
+    const searchBody = {
+        name: query,
+        userId: userId
+    };
 
-// Save contacts to local storage
-function saveContacts(contacts) {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
+    const data = await apiRequest('/SearchContact.php', 'POST', searchBody);
+    
+    if (data.results) {
+        displayContacts(data.results);
+    } else {
+        document.getElementById('contactList').innerHTML = '<li>No contacts found.</li>';
+    }
 }
 
 // Display contacts
@@ -57,63 +123,71 @@ function displayContacts(contacts) {
     contacts.forEach((contact, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
-            ${contact.name} - ${contact.phone}
-            <button onclick="editContact(${index})">Edit</button>
-            <button onclick="deleteContact(${index})">Delete</button>
+            ${contact.name} - ${contact.phone} - ${contact.email}
+            <button onclick="editContact(${contact.id})">Edit</button>
+            <button onclick="deleteContact(${contact.id})">Delete</button>
         `;
         contactList.appendChild(li);
     });
 }
 
 // Add or edit a contact
-document.getElementById('contactForm').addEventListener('submit', function(event) {
+document.getElementById('contactForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     const name = document.getElementById('contactName').value;
     const phone = document.getElementById('contactPhone').value;
+    const email = document.getElementById('contactEmail').value;
 
-    let contacts = loadContacts();
+    const contactData = {
+        contact: { name, phone, email },
+        userId: userId
+    };
 
     if (editIndex !== null) {
         // Editing an existing contact
-        contacts[editIndex] = { name, phone };
+        contactData.id = editIndex;
+        await apiRequest('/editContact.php', 'POST', contactData);
         editIndex = null;
     } else {
         // Adding a new contact
-        contacts.push({ name, phone });
+        await apiRequest('/AddContact.php', 'POST', contactData);
     }
 
-    saveContacts(contacts);
-    displayContacts(contacts);
     document.getElementById('contactForm').reset();
+    loadContacts(); // Refresh contact list
 });
 
 // Delete a contact
-function deleteContact(index) {
-    let contacts = loadContacts();
-    contacts.splice(index, 1);
-    saveContacts(contacts);
-    displayContacts(contacts);
+async function deleteContact(id) {
+    const deleteBody = {
+        userId: userId,
+        id: id
+    };
+
+    await apiRequest('/DeleteContact.php', 'POST', deleteBody);
+    loadContacts();
 }
 
 // Edit a contact
-function editContact(index) {
-    let contacts = loadContacts();
-    const contact = contacts[index];
-    document.getElementById('contactName').value = contact.name;
-    document.getElementById('contactPhone').value = contact.phone;
-    editIndex = index;
+async function editContact(id) {
+    const contacts = await loadContacts(); // fetch contacts again to find the contact to edit
+    const contact = contacts.find(contact => contact.id === id);
+
+    if (contact) {
+        document.getElementById('contactName').value = contact.name;
+        document.getElementById('contactPhone').value = contact.phone;
+        document.getElementById('contactEmail').value = contact.email;
+        editIndex = id;
+    }
 }
 
 // Search contacts
 document.getElementById('searchBar').addEventListener('input', function(event) {
     const query = event.target.value.toLowerCase();
-    let contacts = loadContacts();
-    const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(query));
-    displayContacts(filteredContacts);
+    loadContacts(query);
 });
 
 // Initial load
 document.addEventListener('DOMContentLoaded', function() {
-    const contacts = loadContacts();
-    displayContacts(contacts);
+    loadContacts();
 });
