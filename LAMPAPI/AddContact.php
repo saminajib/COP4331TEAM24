@@ -15,13 +15,29 @@
     }
     else
     {
-        $stmt = $conn->prepare("insert into Contacts (Name, Phone, Email, UserID) values (?, ?, ?, ?)");
-        $stmt->bind_param('sssi',$name,$phone, $email, $userId);
-        $stmt->execute();
-        $stmt->close();
-        $conn->close();
-        returnWithError("");
-    }
+            $stmt = $conn->prepare("SELECT ID FROM Users WHERE ID = ?");
+            $stmt->bind_param('i', $userId);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0)
+            {
+                $stmt->close();
+
+                $stmt = $conn->prepare("INSERT INTO Contacts (Name, Phone, Email, UserID) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param('sssi', $name, $phone, $email, $userId);
+                $stmt->execute();
+                returnWithError("");
+            }
+            else
+            {
+                http_response_code(404);
+                returnWithError("UserID not valid");
+            }
+
+            $stmt->close();
+            $conn->close();
+        }
 
     function getRequestInfo()
     {
