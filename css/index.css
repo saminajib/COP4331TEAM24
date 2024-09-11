@@ -1,0 +1,86 @@
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.title-container {
+    text-align: center;
+    padding-right: 5em;
+}
+
+h2 {
+    text-align: center;
+    color: white;
+    font-size: 50px;
+    margin-bottom: 10px; 
+    
+}
+
+a {
+    text-align: center;
+    color: aliceblue;
+    font-size: 20px;
+}
+.form-box h2 {
+    color: #434141;
+}
+
+.title-container a:hover {
+    color: #838383;
+}
+
+p {
+    color: 434141;
+    font-size: 1.2em;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+body {
+  background: url("../images/blur.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.form-box {
+    background: white;
+    border-radius: 17px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 0 20px black;
+}
+
+.input-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.home-button {
+    display: inline-block;
+    width: 80%;
+    height: 60px;
+    border-radius: 40px;
+    background: #897261;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 60px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background: #453b30;
+}

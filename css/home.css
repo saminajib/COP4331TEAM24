@@ -1,0 +1,154 @@
+/* Universal styles */
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Body and background */
+body {
+    background: url("../images/blur.jpg") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+/* Back Arrow */
+.back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    color: white;
+    text-decoration: none;
+}
+
+.back-arrow:hover {
+    color: #838383;
+}
+
+
+
+/* Main Content */
+.content {
+    margin-left: 150px;
+    padding: 20px;
+}
+
+/* User greeting */
+.loggedIn {
+    margin-bottom: 20px;
+    margin-top: 6px;
+   
+    font-size: 30px;
+    color: white;
+    text-align: center;
+}
+
+/* Contact Actions */
+.contact-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.column {
+    flex: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    font-size: 30px;
+}
+
+.action-btn {
+    background-color: #897261;
+    border: none;
+    padding: 20px;
+    border-radius: 5px;
+    margin-left: 30px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.action-btn i {
+    color: white;
+}
+
+.action-btn:hover {
+    background-color: #453b30;
+}
+
+/* Add Contacts Form */
+.addContacts {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.addContacts input {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #897261;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #6f5e4d;
+}
+
+/* Contacts Table */
+.tables {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #595959;
+    color: white;
+}
+
+td button {
+    background-color: rgba(155, 188, 115, 0.9);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+td button:hover {
+    background-color: #6f5e4d;
+}
