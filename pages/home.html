@@ -27,19 +27,13 @@
                 <input onkeyup="searchContacts()" type="text" id="searchText" placeholder="Search..." class="search-input">
                 <button class="action-btn" id="searchContact">
                     <i class="fas fa-search"></i>
-                    <span id ="searchbar" style="color:white">Search</span>
+                    <span id="searchbar" style="color:white">Search</span>
                 </button>
             </div>
             <div class="column">
-                <button class="action-btn">
-                    <i class="fas fa-sync"></i>
-                    <span id ="searchbar" style="color:white">Load Contacts</span>
-                </button>
-            </div>
-            <div class="column">
-                <button class="action-btn">
+                <button class="action-btn" id="addContactBtn">
                     <i class="fas fa-user-plus"></i>
-                    <span id ="searchbar" style="color:white">Add a Contact</span>
+                    <span style="color:white">Add a Contact</span>
                 </button>
             </div>
         </div>
@@ -51,10 +45,10 @@
                 <input type="text" id="lastName" placeholder="Last Name" required>
                 <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" pattern="^\d{3}-\d{3}-\d{4}$" required>
                 <input type="email" id="email" placeholder="name@example.com" required>
-                <button type="button" class="submit-btn" onclick="addContact();">Add Contact</button>
+                <button type="submit" id="contactForm" class="submit-btn">Add Contact</button>
             </form>
         </div>
-
+        
         <!-- Contacts Table -->
         <div class="tables">
             <table id="contactsTable">

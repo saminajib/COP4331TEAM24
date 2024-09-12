@@ -1,6 +1,7 @@
 const apiBaseURL = "http://cop4331team24.online/LAMPAPI";
-let userId = 12; // This would be dynamically set after login
-let editIndex = null;
+let userId = localStorage.getItem('userId');  // Stored the userId after login
+let editContactId = null;  // Track the contact being edited
+
 
 // Helper function to make API requests
 async function apiRequest(endpoint, method, body) {
@@ -13,6 +14,16 @@ async function apiRequest(endpoint, method, body) {
     });
     return await response.json();
 }
+
+// Show the add contact form when clicking "Add a Contact"
+document.getElementById('addContactBtn').addEventListener('click', function() {
+    const addContactForm = document.getElementById('addContactForm');
+    addContactForm.style.display = addContactForm.style.display === 'none' ? 'block' : 'none';
+
+    // Clear the form and reset the editContactId when clicking Add a Contact
+    document.getElementById('addContactFormElement').reset();
+    editContactId = null;  // Reset the contact being edited
+});
 
 // Register form submission
 document.getElementById('registerForm')?.addEventListener('submit', async function(event) {
@@ -99,11 +110,11 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     }
 });
 
-// Load contacts from local storage
+// Load and display contacts (Search)
 async function loadContacts(query = '') {
     const searchBody = {
         name: query,
-        userId: userId
+        userId: parseInt(userId)
     };
 
     const data = await apiRequest('/SearchContact.php', 'POST', searchBody);
@@ -111,56 +122,71 @@ async function loadContacts(query = '') {
     if (data.results) {
         displayContacts(data.results);
     } else {
-        document.getElementById('contactList').innerHTML = '<li>No contacts found.</li>';
+        document.getElementById('contactsList').innerHTML = '<tr><td colspan="5">No contacts found.</td></tr>';
     }
 }
 
-// Display contacts
+// Display contacts in the table
 function displayContacts(contacts) {
-    const contactList = document.getElementById('contactList');
-    contactList.innerHTML = '';
+    const contactsList = document.getElementById('contactsList');
+    contactsList.innerHTML = '';  // Clear the existing list
 
-    contacts.forEach((contact, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            ${contact.name} - ${contact.phone} - ${contact.email}
-            <button onclick="editContact(${contact.id})">Edit</button>
-            <button onclick="deleteContact(${contact.id})">Delete</button>
+    contacts.forEach((contact) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${contact.firstName}</td>
+            <td>${contact.lastName}</td>
+            <td>${contact.email}</td>
+            <td>${contact.phone}</td>
+            <td>
+                <button onclick="editContact(${contact.id})">Edit</button>
+                <button onclick="deleteContact(${contact.id})">Delete</button>
+            </td>
         `;
-        contactList.appendChild(li);
+        contactsList.appendChild(row);
     });
 }
 
-// Add or edit a contact
-document.getElementById('contactForm').addEventListener('submit', async function(event) {
+// Add or edit a contact via form submission
+document.getElementById('addContactFormElement').addEventListener('submit', async function(event) {
     event.preventDefault();
-    const name = document.getElementById('contactName').value;
-    const phone = document.getElementById('contactPhone').value;
-    const email = document.getElementById('contactEmail').value;
+
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const phone = document.getElementById('phoneNumber').value;
+    const email = document.getElementById('email').value;
 
     const contactData = {
-        contact: { name, phone, email },
-        userId: userId
+        contact: { firstName, lastName, phone, email },
+        userId: parseInt(userId)
     };
 
-    if (editIndex !== null) {
-        // Editing an existing contact
-        contactData.id = editIndex;
-        await apiRequest('/editContact.php', 'POST', contactData);
-        editIndex = null;
-    } else {
-        // Adding a new contact
-        await apiRequest('/AddContact.php', 'POST', contactData);
-    }
+    try {
+        if (editContactId !== null) {
+            // Editing an existing contact
+            contactData.contact.id = editContactId;  // Add the contact's ID to the request
+            await apiRequest('/editContact.php', 'POST', contactData);
+        } else {
+            // Adding a new contact
+            await apiRequest('/AddContact.php', 'POST', contactData);
+        }
 
-    document.getElementById('contactForm').reset();
-    loadContacts(); // Refresh contact list
+        // Clear form and reset the ID after submission
+        document.getElementById('addContactFormElement').reset();
+        document.getElementById('addContactForm').style.display = 'none';  // Hide form after submission
+        editContactId = null;
+
+        // Reload contact list
+        loadContacts();
+    } catch (error) {
+        console.error('Error adding/editing contact:', error);
+    }
 });
 
 // Delete a contact
 async function deleteContact(id) {
     const deleteBody = {
-        userId: userId,
+        userId: parseInt(userId),
         id: id
     };
 
@@ -168,24 +194,27 @@ async function deleteContact(id) {
     loadContacts();
 }
 
-// Edit a contact
+// Edit a contact (populate form with existing data)
 async function editContact(id) {
-    const contacts = await loadContacts(); // fetch contacts again to find the contact to edit
+    const contacts = await loadContacts();  // Fetch contacts again to find the contact to edit
     const contact = contacts.find(contact => contact.id === id);
 
     if (contact) {
-        document.getElementById('contactName').value = contact.name;
-        document.getElementById('contactPhone').value = contact.phone;
-        document.getElementById('contactEmail').value = contact.email;
-        editIndex = id;
+        document.getElementById('firstName').value = contact.firstName;
+        document.getElementById('lastName').value = contact.lastName;
+        document.getElementById('phoneNumber').value = contact.phone;
+        document.getElementById('email').value = contact.email;
+
+        editContactId = id;  // Set the contact ID being edited
+        document.getElementById('addContactForm').style.display = 'block';  // Show the form for editing
     }
 }
 
-// Search contacts
-document.getElementById('searchBar').addEventListener('input', function(event) {
-    const query = event.target.value.toLowerCase();
+// Search contacts dynamically on keyup or when clicking the search button
+function searchContacts() {
+    const query = document.getElementById('searchText').value;
     loadContacts(query);
-});
+}
 
 // Initial load
 document.addEventListener('DOMContentLoaded', function() {
