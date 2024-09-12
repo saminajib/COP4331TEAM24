@@ -15,14 +15,26 @@ async function apiRequest(endpoint, method, body) {
     return await response.json();
 }
 
-// Show the add contact form when clicking "Add a Contact"
-document.getElementById('addContactBtn').addEventListener('click', function() {
-    const addContactForm = document.getElementById('addContactForm');
-    addContactForm.style.display = addContactForm.style.display === 'none' ? 'block' : 'none';
+// Redirect to home (index.html) when the "Home" link is clicked
+document.getElementById('backToHome').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent default anchor behavior
+    window.location.href = '../index.html';  // Redirect to index page
+});
 
-    // Clear the form and reset the editContactId when clicking Add a Contact
-    document.getElementById('addContactFormElement').reset();
-    editContactId = null;  // Reset the contact being edited
+// Logout functionality
+document.getElementById('logoutLink').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent default anchor behavior
+
+    // Clear session data from localStorage
+    localStorage.removeItem('userId');
+    localStorage.removeItem('firstName');
+    localStorage.removeItem('lastName');
+
+    // Optionally clear any other session-related data here
+    // ...
+
+    // Redirect to login or home page
+    window.location.href = '../index.html';
 });
 
 // Register form submission
@@ -108,6 +120,16 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     } else {
         document.getElementById('loginMessage').textContent = 'Please fill in all fields!';
     }
+});
+
+// Show the add contact form when clicking "Add a Contact"
+document.getElementById('addContactBtn').addEventListener('click', function() {
+    const addContactForm = document.getElementById('addContactForm');
+    addContactForm.style.display = addContactForm.style.display === 'none' ? 'block' : 'none';
+
+    // Clear the form and reset the editContactId when clicking Add a Contact
+    document.getElementById('addContactFormElement').reset();
+    editContactId = null;  // Reset the contact being edited
 });
 
 // Load and display contacts (Search)
