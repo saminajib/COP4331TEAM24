@@ -39,8 +39,7 @@
         <!-- Add Contact Form -->
         <div class="addContacts" id="addContactForm" style="display:none;">
             <form id="addContactFormElement">
-                <input type="text" id="firstName" placeholder="First Name" required>
-                <input type="text" id="lastName" placeholder="Last Name" required>
+                <input type="text" id="name" placeholder="name" required>
                 <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" pattern="^\d{3}-\d{3}-\d{4}$" required>
                 <input type="email" id="email" placeholder="name@example.com" required>
                 <button type="submit" id="contactForm" class="submit-btn">Add Contact</button>
@@ -52,8 +51,7 @@
             <table id="contactsTable">
                 <thead>
                     <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Actions</th>
@@ -63,7 +61,7 @@
             </table>
         </div>
     </div>
-    <script src="../script.js"></script>
+    <script src="../js/home.js"></script>
 </body>
 
 </html>
