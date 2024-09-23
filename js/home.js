@@ -55,6 +55,7 @@ async function loadContacts(query = '') {
     } else {
         document.getElementById('contactsList').innerHTML = '<tr><td colspan="5">No contacts found.</td></tr>';
     }
+
 }
 
 // Display contacts in the table
@@ -70,7 +71,7 @@ function displayContacts(contacts) {
             <td>${contact.phone}</td>
             <td>
                 <button onclick="editContact(${contact.id})">Edit</button>
-                <button onclick="deleteContact(${contact.id})">Delete</button>
+                <button onclick="deleteContact('${contact.name}')">Delete</button>
             </td>
         `;
         contactsList.appendChild(row);
@@ -113,10 +114,10 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
 });
 
 // Delete a contact
-async function deleteContact(id) {
+async function deleteContact(name) {
     const deleteBody = {
-        userId: parseInt(userId),
-        id: id
+        name: name,
+        userId: userId
     };
 
     await apiRequest('/DeleteContact.php', 'POST', deleteBody);

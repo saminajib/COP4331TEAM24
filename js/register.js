@@ -1,3 +1,9 @@
+// Redirect to home (index.html) when the "Home" link is clicked
+document.getElementById('backToHome').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent default anchor behavior
+    window.location.href = '../index.html';  // Redirect to index page
+});
+
 // Register form submission
 document.getElementById('registerForm')?.addEventListener('submit', async function(event) {
     event.preventDefault();
