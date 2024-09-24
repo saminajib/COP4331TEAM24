@@ -212,10 +212,10 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
 });
 
 // Delete a contact
-async function deleteContact(id) {
+async function deleteContact(name) {
     const deleteBody = {
-        userId: parseInt(userId),
-        id: id
+        name: name,
+        userId: parseInt(userId)
     };
 
     await apiRequest('/DeleteContact.php', 'POST', deleteBody);
