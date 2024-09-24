@@ -192,7 +192,7 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
     try {
         if (editContactId !== null) {
             // Editing an existing contact
-            contactData.contact.id = editContactId;  // Add the contact's ID to the request
+            contactData.contact.name = editContactId;  // Add the contact's ID to the request
             await apiRequest('/editContact.php', 'POST', contactData);
         } else {
             // Adding a new contact
