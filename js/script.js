@@ -167,8 +167,8 @@ function displayContacts(contacts) {
             <td>${contact.email}</td>
             <td>${contact.phone}</td>
             <td>
-                <button onclick="editContact(${contact.id})">Edit</button>
-                <button onclick="deleteContact(${contact.id})">Delete</button>
+                <button onclick="editContact(${contact.name})">Edit</button>
+                <button onclick="deleteContact(${contact.name})">Delete</button>
             </td>
         `;
         contactsList.appendChild(row);
@@ -223,9 +223,9 @@ async function deleteContact(id) {
 }
 
 // Edit a contact (populate form with existing data)
-async function editContact(id) {
+async function editContact(name) {
     const contacts = await getContacts();  // Fetch contacts again to find the contact to edit
-    const contact = contacts.find(contact => contact.id === id);
+    const contact = contacts.find(contact => contact.name === name);
 
     if (contact) {
         document.getElementById('firstName').value = contact.firstName;
