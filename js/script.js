@@ -132,17 +132,23 @@ document.getElementById('addContactBtn').addEventListener('click', function() {
     editContactId = null;  // Reset the contact being edited
 });
 
-// Load and display contacts (Search)
-async function loadContacts(query = '') {
+// Separate function to retrieve contacts from the API
+async function getContacts(query = '') {
     const searchBody = {
         name: query,
         userId: parseInt(userId)
     };
 
     const data = await apiRequest('/SearchContact.php', 'POST', searchBody);
+    return data.results || [];
+}
+
+// Load and display contacts (Search)
+async function loadContacts(query = '') {
+    const contacts = await getContacts(query);
     
-    if (data.results) {
-        displayContacts(data.results);
+    if (contacts) {
+        displayContacts(contacts);
     } else {
         document.getElementById('contactsList').innerHTML = '<tr><td colspan="5">No contacts found.</td></tr>';
     }
@@ -218,7 +224,7 @@ async function deleteContact(id) {
 
 // Edit a contact (populate form with existing data)
 async function editContact(id) {
-    const contacts = await loadContacts();  // Fetch contacts again to find the contact to edit
+    const contacts = await getContacts();  // Fetch contacts again to find the contact to edit
     const contact = contacts.find(contact => contact.id === id);
 
     if (contact) {
