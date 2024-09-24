@@ -41,21 +41,26 @@ document.getElementById('addContactBtn').addEventListener('click', function() {
     editContactId = null;  // Reset the contact being edited
 });
 
-// Load and display contacts (Search)
-async function loadContacts(query = '') {
+// Separate function to retrieve contacts from the API
+async function getContacts(query = '') {
     const searchBody = {
         name: query,
         userId: parseInt(userId)
     };
 
     const data = await apiRequest('/SearchContact.php', 'POST', searchBody);
+    return data.results || [];
+}
 
-    if (data.results) {
-        displayContacts(data.results);
+// Load and display contacts (Search)
+async function loadContacts(query = '') {
+    const contacts = await getContacts(query);
+    
+    if (contacts) {
+        displayContacts(contacts);
     } else {
         document.getElementById('contactsList').innerHTML = '<tr><td colspan="5">No contacts found.</td></tr>';
     }
-
 }
 
 // Display contacts in the table
@@ -66,12 +71,13 @@ function displayContacts(contacts) {
     contacts.forEach((contact) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${contact.name}</td>
+            <td>${contact.firstName}</td>
+            <td>${contact.lastName}</td>
             <td>${contact.email}</td>
             <td>${contact.phone}</td>
             <td>
-                <button onclick="editContact(${contact.id})">Edit</button>
-                <button onclick="deleteContact('${contact.name}')">Delete</button>
+                <button onclick="editContact(${contact.name})">Edit</button>
+                <button onclick="deleteContact(${contact.name})">Delete</button>
             </td>
         `;
         contactsList.appendChild(row);
@@ -94,7 +100,7 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
     try {
         if (editContactId !== null) {
             // Editing an existing contact
-            contactData.contact.id = editContactId;  // Add the contact's ID to the request
+            contactData.contact.name = editContactId;  // Add the contact's ID to the request
             await apiRequest('/editContact.php', 'POST', contactData);
         } else {
             // Adding a new contact
@@ -125,16 +131,16 @@ async function deleteContact(name) {
 }
 
 // Edit a contact (populate form with existing data)
-async function editContact(id) {
-    const contacts = await loadContacts();  // Fetch contacts again to find the contact to edit
-    const contact = contacts.find(contact => contact.id === id);
+async function editContact(name) {
+    const contacts = await getContacts();  // Fetch contacts again to find the contact to edit
+    const contact = contacts.find(contact => contact.name === name);
 
     if (contact) {
         document.getElementById('name').value = contact.name;
         document.getElementById('phoneNumber').value = contact.phone;
         document.getElementById('email').value = contact.email;
 
-        editContactId = id;  // Set the contact ID being edited
+        editContactId = name;  // Set the contact ID being edited
         document.getElementById('addContactForm').style.display = 'block';  // Show the form for editing
     }
 }
