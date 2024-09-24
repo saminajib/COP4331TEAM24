@@ -71,8 +71,7 @@ function displayContacts(contacts) {
     contacts.forEach((contact) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${contact.firstName}</td>
-            <td>${contact.lastName}</td>
+            <td>${contact.name}</td>
             <td>${contact.email}</td>
             <td>${contact.phone}</td>
             <td>
