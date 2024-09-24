@@ -70,15 +70,41 @@ function displayContacts(contacts) {
 
     contacts.forEach((contact) => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${contact.name}</td>
-            <td>${contact.email}</td>
-            <td>${contact.phone}</td>
-            <td>
-                <button onclick="editContact(${contact.name})">Edit</button>
-                <button onclick="deleteContact(${contact.name})">Delete</button>
-            </td>
-        `;
+
+        // Create table cells for contact data
+        const nameCell = document.createElement('td');
+        nameCell.textContent = contact.name;
+
+        const emailCell = document.createElement('td');
+        emailCell.textContent = contact.email;
+
+        const phoneCell = document.createElement('td');
+        phoneCell.textContent = contact.phone;
+
+        // Create action cell (Edit and Delete buttons)
+        const actionCell = document.createElement('td');
+
+        // Create Edit button
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => editContact(contact.name));  // Attach event listener
+
+        // Create Delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => deleteContact(contact.name));  // Attach event listener
+
+        // Append buttons to the action cell
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
+
+        // Append all cells to the row
+        row.appendChild(nameCell);
+        row.appendChild(emailCell);
+        row.appendChild(phoneCell);
+        row.appendChild(actionCell);
+
+        // Append the row to the contacts table
         contactsList.appendChild(row);
     });
 }
