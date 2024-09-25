@@ -26,7 +26,7 @@
 			}
 			$searchCount++;
 			// $searchResults .= '"' . $row["Name"] . '"';
-			$searchResults .= '{"name" : "' . $row["Name"]. '", "phone" : "' . $row["Phone"]. '", "email" : "' . $row["Email"]. '"}';
+			$searchResults .= '{"name" : "' . $row["Name"]. '", "phone" : "' . $row["Phone"]. '", "email" : "' . $row["Email"]. '", "id" : ' . $row["ID"]. '}';
 		}
 		
 		if ($searchCount == 0)
