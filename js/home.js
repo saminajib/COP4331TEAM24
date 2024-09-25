@@ -131,18 +131,17 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
             // Adding a new contact
             await apiRequest('/AddContact.php', 'POST', contactData);
         }
+        loadContacts();
 
         // Clear form and reset the ID after submission
         document.getElementById('addContactFormElement').reset();
         document.getElementById('addContactForm').style.display = 'none';  // Hide form after submission
         editContactId = null;
-
-        // Reload contact list
-        loadContacts();
     } catch (error) {
         console.error('Error adding/editing contact:', error);
     }
 });
+
 
 // Delete a contact
 async function deleteContact(name) {
