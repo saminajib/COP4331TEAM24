@@ -140,7 +140,7 @@ async function deleteContact(id, name) {
         userId: parseInt(userId),
         name: name
     };
-    let decision = confirm("Press ok to delete contact.");
+    let decision = confirm("Are you sure you want do delete this contact? This action cannot be undone.");
 
     if(decision) {
         await apiRequest('/DeleteContact.php', 'POST', deleteBody);
