@@ -140,10 +140,12 @@ async function deleteContact(id, name) {
         userId: parseInt(userId),
         name: name
     };
+    let decision = confirm("Press ok to delete contact.");
 
-
-    await apiRequest('/DeleteContact.php', 'POST', deleteBody);
-    loadContacts();
+    if(decision) {
+        await apiRequest('/DeleteContact.php', 'POST', deleteBody);
+        loadContacts();
+    }
 }
 
 
