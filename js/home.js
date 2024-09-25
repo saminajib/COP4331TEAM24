@@ -1,6 +1,7 @@
 const apiBaseURL = "http://cop4331team24.online/LAMPAPI";
 let userId = localStorage.getItem('userId');  // Stored the userId after login
-let editContactId = null;  // Track the contact being edited
+let editContactName = null;  // Track the contact being edited (use name and phone as the identifier)
+let editContactPhone = null;  // Track the phone number of the contact being edited
 
 
 // Helper function to make API requests
@@ -19,13 +20,7 @@ async function apiRequest(endpoint, method, body) {
 document.getElementById('logoutLink').addEventListener('click', function(event) {
     event.preventDefault();  // Prevent default anchor behavior
 
-    // Clear session data from localStorage
-    localStorage.removeItem('userId');
-    localStorage.removeItem('firstName');
-    localStorage.removeItem('lastName');
-
-    // Optionally clear any other session-related data here
-    // ...
+    localStorage.clear();  // Clear session data from localStorage
 
     // Redirect to login or home page
     window.location.href = '../index.html';
@@ -38,7 +33,8 @@ document.getElementById('addContactBtn').addEventListener('click', function() {
 
     // Clear the form and reset the editContactId when clicking Add a Contact
     document.getElementById('addContactFormElement').reset();
-    editContactId = null;  // Reset the contact being edited
+    editContactName = null;  // Reset the contact being edited
+    editContactPhone = null;  // Reset the contact being edited
 });
 
 // Separate function to retrieve contacts from the API
@@ -87,7 +83,7 @@ function displayContacts(contacts) {
         // Create Edit button
         const editButton = document.createElement('button');
         editButton.textContent = 'Edit';
-        editButton.addEventListener('click', () => editContact(contact.name));  // Attach event listener
+        editButton.addEventListener('click', () => editContact(contact.name, contact.phone));  // Attach event listener
 
         // Create Delete button
         const deleteButton = document.createElement('button');
@@ -103,6 +99,9 @@ function displayContacts(contacts) {
         row.appendChild(emailCell);
         row.appendChild(phoneCell);
         row.appendChild(actionCell);
+
+        row.setAttribute('data-name', contact.name);
+        row.setAttribute('data-phone', contact.phone);
 
         // Append the row to the contacts table
         contactsList.appendChild(row);
@@ -125,23 +124,41 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
     try {
         if (editContactId !== null) {
             // Editing an existing contact
-            contactData.contact.name = editContactId;  // Add the contact's ID to the request
             await apiRequest('/editContact.php', 'POST', contactData);
+            updateContactInTable(editContactName, editContactPhone, name, email, phone);
         } else {
             // Adding a new contact
             await apiRequest('/AddContact.php', 'POST', contactData);
+            loadContacts();
         }
-        loadContacts();
 
         // Clear form and reset the ID after submission
         document.getElementById('addContactFormElement').reset();
         document.getElementById('addContactForm').style.display = 'none';  // Hide form after submission
-        editContactId = null;
+        editContactName = null;
+        editContactPhone = null;
     } catch (error) {
         console.error('Error adding/editing contact:', error);
     }
 });
 
+// Function to immediately update the contact in the frontend table
+function updateContactInTable(originalName, originalPhone, newName, newEmail, newPhone) {
+    const rows = document.querySelectorAll('#contactsList tr');
+
+    rows.forEach(row => {
+        if (row.getAttribute('data-name') === originalName && row.getAttribute('data-phone') === originalPhone) {
+            // Update the table row with the new values
+            row.querySelector('td:nth-child(1)').textContent = newName;
+            row.querySelector('td:nth-child(2)').textContent = newEmail;
+            row.querySelector('td:nth-child(3)').textContent = newPhone;
+
+            // Update the row's data attributes to reflect the new values
+            row.setAttribute('data-name', newName);
+            row.setAttribute('data-phone', newPhone);
+        }
+    });
+}
 
 // Delete a contact
 async function deleteContact(name) {
@@ -155,16 +172,17 @@ async function deleteContact(name) {
 }
 
 // Edit a contact (populate form with existing data)
-async function editContact(name) {
+async function editContact(name, phone) {
     const contacts = await getContacts();  // Fetch contacts again to find the contact to edit
-    const contact = contacts.find(contact => contact.name === name);
+    const contact = contacts.find(contact => contact.name === name && contact.phone === phone);  // Use name and phone
 
     if (contact) {
         document.getElementById('name').value = contact.name;
         document.getElementById('phoneNumber').value = contact.phone;
         document.getElementById('email').value = contact.email;
 
-        editContactId = name;  // Set the contact ID being edited
+        editContactName = name;  // Set the contact name being edited
+        editContactPhone = phone;  // Set the contact phone being edited
         document.getElementById('addContactForm').style.display = 'block';  // Show the form for editing
     }
 }
