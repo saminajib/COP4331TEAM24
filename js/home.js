@@ -122,7 +122,7 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
     };
 
     try {
-        if (editContactId !== null) {
+        if (editContactName !== null && editContactPhone !== null) {
             // Editing an existing contact
             await apiRequest('/editContact.php', 'POST', contactData);
             updateContactInTable(editContactName, editContactPhone, name, email, phone);
