@@ -85,7 +85,7 @@ function displayContacts(contacts) {
            <td>${contact.phone}</td>
            <td>
                <button onclick="editContact(${contact.id})">Edit</button>
-               <button onclick="deleteContact(${contact.id},'${contact.name}')">Delete</button>
+               <button onclick="deleteContact(${contact.id})">Delete</button>
            </td>
        `;
         contactsList.appendChild(row);
@@ -135,10 +135,10 @@ document.getElementById('addContactFormElement').addEventListener('submit', asyn
 
 
 // Delete a contact
-async function deleteContact(id, name) {
+async function deleteContact(id) {
     const deleteBody = {
         userId: parseInt(userId),
-        name: name
+        id: id
     };
     let decision = confirm("Are you sure you want do delete this contact? This action cannot be undone.");
 
